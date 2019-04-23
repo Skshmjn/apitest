@@ -14,10 +14,9 @@ def home():
     return "hello world"
 
 
-@app.route('/get_location', methods=['GET'])
-def get_location():
+@app.route('/get_location/<path:key>', methods=['GET'])
+def get_location(key):
     conn = psycopg2.connect(host="localhost", database="Test", user="postgres", password="15021997")
-    key = input("Enter pin code here ")
 
     cur = conn.cursor()
     cur.execute("SELECT * from location WHERE Key='{}';".format(key))
@@ -71,9 +70,9 @@ def post_location():
 def get_using_postgres():
     conn = psycopg2.connect(host="localhost", database="Test", user="postgres", password="15021997")
     cur = conn.cursor()
-    lat = input('input latitude:')
-    lng = input('input longitude:')
-    distance = int(input('input distance in KM:')) * 1000
+    lat = request.args['lat']
+    lng = request.args['lng']
+    distance = int(request.args['dist'])*1000
     cur.execute("CREATE EXTENSION IF NOT EXISTS cube")
     cur.execute("CREATE EXTENSION IF NOT EXISTS earthdistance")
     cur.execute(
@@ -100,9 +99,9 @@ def get_using_postgres():
 def get_using_self():
     conn = psycopg2.connect(host="localhost", database="Test", user="postgres", password="15021997")
     cur = conn.cursor()
-    lat = input('input latitude:')
-    lng = input('input longitude:')
-    distance = input('input distance in KM:')
+    lat = request.args['lat']
+    lng = request.args['lng']
+    distance = request.args['dist']
 
     cur.execute(
         ' SELECT * FROM location ;')
@@ -127,8 +126,8 @@ def get_using_self():
 @app.route('/check_coordinate_geojson', methods=['GET'])
 def check_coordinate_geojson():
     conn = psycopg2.connect(host="localhost", database="Test", user="postgres", password="15021997")
-    lat = float(input('input latitude:'))
-    lng = float(input('input longitude:'))
+    lat = float(request.args['lat'])
+    lng = float(request.args['lng'])
 
     cur = conn.cursor()
     cur.execute("SELECT * from geojson;")
